@@ -1,18 +1,18 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Users, Receipt, CreditCard, TrendingUp } from 'lucide-react';
-import { useAppContext } from '../../context/AppContext';
-import WalletConnect from '../ui/WalletConnect';
+import { Link, useLocation } from "react-router-dom";
+import { Users, Receipt, CreditCard, TrendingUp } from "lucide-react";
+import { useAppContext } from "../../context/AppContext";
+import WalletConnect from "../ui/WalletConnect";
 
 const Navbar = () => {
   const { getEzPoints } = useAppContext();
   const location = useLocation();
 
   const navItems = [
-    { name: 'Account', path: '/', icon: CreditCard },
-    { name: 'Friends', path: '/friends', icon: Users },
+    { name: "Account", path: "/", icon: CreditCard },
+    { name: "Friends", path: "/friends", icon: Users },
   ];
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="bg-white border-b border-gray-200">
@@ -27,7 +27,7 @@ const Navbar = () => {
               </span>
             </Link>
           </div>
-          
+
           {/* Navigation Links */}
           <div className="hidden md:flex space-x-1 absolute left-1/2 transform -translate-x-1/2">
             {navItems.map((item) => {
@@ -39,8 +39,8 @@ const Navbar = () => {
                   to={item.path}
                   className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                     active
-                      ? 'text-gray-900 bg-gray-100'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? "text-gray-900 bg-gray-100"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                   }`}
                 >
                   <Icon className="w-4 h-4 mr-2" />
@@ -49,7 +49,7 @@ const Navbar = () => {
               );
             })}
           </div>
-          
+
           {/* Right Side */}
           <div className="flex items-center space-x-4">
             <div className="bg-gray-100 rounded-full px-4 py-1.5 text-sm font-medium text-gray-700">
