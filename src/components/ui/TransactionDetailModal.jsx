@@ -85,15 +85,16 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
   const totalPeople = (transaction.participants?.length || 0) + 1;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-        onClick={onClose}
-      ></div>
+    <>
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        {/* Backdrop */}
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+          onClick={onClose}
+        ></div>
 
-      {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
+        {/* Modal */}
+        <div className="flex min-h-full items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
           {/* Settled Stamp */}
           {transaction.settled && (
@@ -248,6 +249,7 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
               </button>
             </div>
           )}
+          </div>
         </div>
       </div>
 
@@ -260,7 +262,7 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
         onClose={handleCloseEmailModal}
         friends={friendsWithLinks}
       />
-    </div>
+    </>
   );
 };
 
