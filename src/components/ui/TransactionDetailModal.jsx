@@ -16,39 +16,28 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
   };
 
   const handleSettleUp = async () => {
-    try {
-      console.log('Settle Up clicked');
-      // Show loading overlay
-      setIsGeneratingLink(true);
-      console.log('Loading overlay should show');
+    // Show loading overlay
+    setIsGeneratingLink(true);
 
-      // Generate payment links for all participants
-      const participants = transaction.participants || [];
-      console.log('Participants:', participants);
-      
-      const linksData = participants.map(friend => {
-        const requestId = `${transaction.id}_${friend.id}`;
-        const link = `${window.location.origin}/payment/${requestId}`;
-        return {
-          id: friend.id,
-          name: friend.name,
-          paymentLink: link
-        };
-      });
-      console.log('Generated links:', linksData);
+    // Generate payment links for all participants
+    const participants = transaction.participants || [];
+    const linksData = participants.map(friend => {
+      const requestId = `${transaction.id}_${friend.id}`;
+      const link = `${window.location.origin}/payment/${requestId}`;
+      return {
+        id: friend.id,
+        name: friend.name,
+        paymentLink: link
+      };
+    });
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Hide loading and show email sent modal
-      setIsGeneratingLink(false);
-      setFriendsWithLinks(linksData);
-      setShowEmailSent(true);
-      console.log('Email modal should show');
-    } catch (error) {
-      console.error('Error in handleSettleUp:', error);
-      setIsGeneratingLink(false);
-    }
+    // Hide loading and show email sent modal
+    setIsGeneratingLink(false);
+    setFriendsWithLinks(linksData);
+    setShowEmailSent(true);
   };
 
   if (!isOpen || !transaction) return null;
@@ -253,14 +242,8 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
           {!transaction.settled && (
             <div className="p-6 border-t border-gray-100 flex justify-center">
               <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  alert('Button clicked!');
-                  handleSettleUp();
-                }}
-                type="button"
-                className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors cursor-pointer"
+                onClick={handleSettleUp}
+                className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
               >
                 Settle Up
               </button>
