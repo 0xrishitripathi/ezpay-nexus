@@ -1,6 +1,8 @@
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Users, Receipt, CreditCard, TrendingUp } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
+import logo from '../../assets/logo.png';
 import WalletConnect from '../ui/WalletConnect';
 
 const Navbar = () => {
@@ -22,9 +24,9 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <img 
-                src="/s3ez-logo.png" 
+                src={logo} 
                 alt="S3EZ Logo" 
-                className="h-8 w-auto"
+                className="h-10 w-auto"
               />
             </Link>
           </div>
