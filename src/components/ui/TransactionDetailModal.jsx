@@ -8,8 +8,6 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
   const [showEmailSent, setShowEmailSent] = useState(false);
   const [friendsWithLinks, setFriendsWithLinks] = useState([]);
 
-  if (!isOpen || !transaction) return null;
-
   const handleDelete = () => {
     if (onDelete) {
       onDelete(transaction.id);
@@ -18,29 +16,42 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
   };
 
   const handleSettleUp = async () => {
-    // Show loading overlay
-    setIsGeneratingLink(true);
+    try {
+      console.log('Settle Up clicked');
+      // Show loading overlay
+      setIsGeneratingLink(true);
+      console.log('Loading overlay should show');
 
-    // Generate payment links for all participants
-    const participants = transaction.participants || [];
-    const linksData = participants.map(friend => {
-      const requestId = `${transaction.id}_${friend.id}`;
-      const link = `${window.location.origin}/payment/${requestId}`;
-      return {
-        id: friend.id,
-        name: friend.name,
-        paymentLink: link
-      };
-    });
+      // Generate payment links for all participants
+      const participants = transaction.participants || [];
+      console.log('Participants:', participants);
+      
+      const linksData = participants.map(friend => {
+        const requestId = `${transaction.id}_${friend.id}`;
+        const link = `${window.location.origin}/payment/${requestId}`;
+        return {
+          id: friend.id,
+          name: friend.name,
+          paymentLink: link
+        };
+      });
+      console.log('Generated links:', linksData);
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Hide loading and show email sent modal
-    setIsGeneratingLink(false);
-    setFriendsWithLinks(linksData);
-    setShowEmailSent(true);
+      // Hide loading and show email sent modal
+      setIsGeneratingLink(false);
+      setFriendsWithLinks(linksData);
+      setShowEmailSent(true);
+      console.log('Email modal should show');
+    } catch (error) {
+      console.error('Error in handleSettleUp:', error);
+      setIsGeneratingLink(false);
+    }
   };
+
+  if (!isOpen || !transaction) return null;
 
   const handleCloseEmailModal = () => {
     setShowEmailSent(false);
