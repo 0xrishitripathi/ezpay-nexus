@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { X, Search, ChevronDown } from 'lucide-react';
 import Input from '../components/ui/Input';
 import { useAppContext } from '../context/AppContext';
+import arbitrumLogo from '../assets/arbitrum-arb-logo.png';
+import polygonLogo from '../assets/polygon-matic-logo.png';
+import ethereumLogo from '../assets/ethereum-eth-logo.png';
+import usdcLogo from '../assets/usd-coin-usdc-logo.png';
+import usdtLogo from '../assets/tether-usdt-logo.png';
 
 const CreateSplit = () => {
   const navigate = useNavigate();
@@ -12,7 +17,9 @@ const CreateSplit = () => {
     title: '',
     amount: '',
     paidBy: 'me', // Default to 'me'
-    selectedFriends: []
+    selectedFriends: [],
+    blockchain: 'arbitrum', // Default blockchain
+    token: 'usdc' // Default token
   });
   
   const [errors, setErrors] = useState({});
@@ -20,8 +27,56 @@ const CreateSplit = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [payeeSearchQuery, setPayeeSearchQuery] = useState('');
   const [isPayeeDropdownOpen, setIsPayeeDropdownOpen] = useState(false);
+  const [isBlockchainDropdownOpen, setIsBlockchainDropdownOpen] = useState(false);
+  const [isTokenDropdownOpen, setIsTokenDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const payeeDropdownRef = useRef(null);
+  const blockchainDropdownRef = useRef(null);
+  const tokenDropdownRef = useRef(null);
+
+  // Blockchain options with logos
+  const blockchains = [
+    { 
+      id: 'arbitrum', 
+      name: 'Arbitrum',
+      logo: arbitrumLogo,
+      color: 'bg-blue-500'
+    },
+    { 
+      id: 'ethereum', 
+      name: 'Ethereum',
+      logo: ethereumLogo,
+      color: 'bg-gray-500'
+    },
+    { 
+      id: 'polygon', 
+      name: 'Polygon',
+      logo: polygonLogo,
+      color: 'bg-purple-500'
+    }
+  ];
+
+  // Token options with logos
+  const tokens = [
+    {
+      id: 'usdc',
+      name: 'USDC',
+      logo: usdcLogo,
+      fullName: 'USD Coin'
+    },
+    {
+      id: 'usdt',
+      name: 'USDT',
+      logo: usdtLogo,
+      fullName: 'Tether'
+    },
+    {
+      id: 'eth',
+      name: 'ETH',
+      logo: ethereumLogo,
+      fullName: 'Ethereum'
+    }
+  ];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -31,6 +86,12 @@ const CreateSplit = () => {
       }
       if (payeeDropdownRef.current && !payeeDropdownRef.current.contains(event.target)) {
         setIsPayeeDropdownOpen(false);
+      }
+      if (blockchainDropdownRef.current && !blockchainDropdownRef.current.contains(event.target)) {
+        setIsBlockchainDropdownOpen(false);
+      }
+      if (tokenDropdownRef.current && !tokenDropdownRef.current.contains(event.target)) {
+        setIsTokenDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -160,6 +221,8 @@ const CreateSplit = () => {
         perPersonAmount,
         paidBy: 'me', // Always set to 'me' since you're creating the split
         paidByName: 'You',
+        blockchain: formData.blockchain,
+        token: formData.token,
         participants: formData.selectedFriends.map(id => {
           const friend = friends.find(f => f.id === id);
           return {
@@ -206,6 +269,122 @@ const CreateSplit = () => {
             error={errors.amount}
             required
           />
+
+          {/* Blockchain Selection */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Receive Payment on
+            </label>
+            <div className="relative" ref={blockchainDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsBlockchainDropdownOpen(!isBlockchainDropdownOpen)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-left flex items-center justify-between"
+              >
+                <div className="flex items-center">
+                  <img 
+                    src={blockchains.find(b => b.id === formData.blockchain)?.logo}
+                    alt={blockchains.find(b => b.id === formData.blockchain)?.name}
+                    className="w-6 h-6 mr-3 rounded-full"
+                  />
+                  <span className="text-gray-900 font-medium">
+                    {blockchains.find(b => b.id === formData.blockchain)?.name}
+                  </span>
+                </div>
+                <ChevronDown 
+                  className={`w-5 h-5 text-gray-400 transition-transform ${isBlockchainDropdownOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {/* Blockchain Dropdown */}
+              {isBlockchainDropdownOpen && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  {blockchains.map(blockchain => (
+                    <div
+                      key={blockchain.id}
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, blockchain: blockchain.id }));
+                        setIsBlockchainDropdownOpen(false);
+                      }}
+                      className={`flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
+                        formData.blockchain === blockchain.id ? 'bg-blue-50' : ''
+                      }`}
+                    >
+                      <img 
+                        src={blockchain.logo} 
+                        alt={blockchain.name}
+                        className="w-6 h-6 mr-3 rounded-full"
+                      />
+                      <span className="text-sm font-medium text-gray-900">{blockchain.name}</span>
+                      {formData.blockchain === blockchain.id && (
+                        <svg className="w-5 h-5 ml-auto text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Token Selection */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Token
+            </label>
+            <div className="relative" ref={tokenDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsTokenDropdownOpen(!isTokenDropdownOpen)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-left flex items-center justify-between"
+              >
+                <div className="flex items-center">
+                  <img 
+                    src={tokens.find(t => t.id === formData.token)?.logo}
+                    alt={tokens.find(t => t.id === formData.token)?.name}
+                    className="w-6 h-6 mr-3 rounded-full"
+                  />
+                  <span className="text-gray-900 font-medium">
+                    {tokens.find(t => t.id === formData.token)?.name}
+                  </span>
+                </div>
+                <ChevronDown 
+                  className={`w-5 h-5 text-gray-400 transition-transform ${isTokenDropdownOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {/* Token Dropdown */}
+              {isTokenDropdownOpen && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  {tokens.map(token => (
+                    <div
+                      key={token.id}
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, token: token.id }));
+                        setIsTokenDropdownOpen(false);
+                      }}
+                      className={`flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
+                        formData.token === token.id ? 'bg-blue-50' : ''
+                      }`}
+                    >
+                      <img 
+                        src={token.logo} 
+                        alt={token.name}
+                        className="w-6 h-6 mr-3 rounded-full"
+                      />
+                      <span className="text-sm font-medium text-gray-900">{token.name}</span>
+                      {formData.token === token.id && (
+                        <svg className="w-5 h-5 ml-auto text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
           
           <div className="mb-5">
             <label className="block text-sm font-medium text-gray-700 mb-2">
