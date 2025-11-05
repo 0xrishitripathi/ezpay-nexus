@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Users, Receipt, CreditCard, TrendingUp } from "lucide-react";
+import { Users, CreditCard } from "lucide-react";
 import { useAppContext } from "../../context/AppContext";
 import WalletConnect from "../ui/WalletConnect";
 

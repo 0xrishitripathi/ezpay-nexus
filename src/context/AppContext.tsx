@@ -1,9 +1,11 @@
+import NexusProvider from "@/components/nexus/NexusProvider";
 import {
   createContext,
   useContext,
   useState,
   useEffect,
   type ReactNode,
+  useMemo,
 } from "react";
 
 export type Friend = {
@@ -115,7 +117,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const getEzPoints = () => ezPoints;
 
-  const value: AppContextValue = {
+  const value: AppContextValue = useMemo(() => {
+    return {
+      friends,
+      splits,
+      addFriend,
+      addSplit,
+      deleteSplit,
+      settleTransaction,
+      getTotalBalance,
+      getEzPoints,
+    };
+  }, [
     friends,
     splits,
     addFriend,
@@ -124,7 +137,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     settleTransaction,
     getTotalBalance,
     getEzPoints,
-  };
+  ]);
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>
+      <NexusProvider>{children}</NexusProvider>
+    </AppContext.Provider>
+  );
 };
