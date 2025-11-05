@@ -42,10 +42,10 @@ const Friends = () => {
     return gradients[index];
   };
 
-  // Calculate balance for a friend
+  // Calculate balance for a friend (excluding settled transactions)
   const getFriendBalance = (friendId) => {
     const friendSplits = splits.filter(split => 
-      split.participants?.some(p => p.id === friendId)
+      split.participants?.some(p => p.id === friendId) && !split.settled
     );
     return friendSplits.reduce((total, split) => total + parseFloat(split.perPersonAmount || 0), 0).toFixed(2);
   };
@@ -167,46 +167,81 @@ const Friends = () => {
           )}
         </div>
 
-        {/* Right Side - All Split History */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-900">Split History</h2>
-            <p className="text-xs text-gray-500 mt-1">
-              {splits.length} {splits.length === 1 ? 'transaction' : 'transactions'}
-            </p>
-          </div>
-          
-          <div className="max-h-[600px] overflow-y-auto">
-            {splits.length > 0 ? (
-              <div className="divide-y divide-gray-100">
-                {splits.map((split) => (
-                  <div key={split.id}>
-                    <TransactionItem
-                      title={split.title}
-                      date={split.date}
-                      amount={split.amount}
-                      points={parseFloat(split.amount) / 10}
-                      isSplit={true}
-                      participants={split.participants || []}
-                      paidByName={split.paidByName}
-                      totalAmount={split.amount}
-                      onClick={() => handleTransactionClick(split)}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-16 text-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Receipt className="w-8 h-8 text-gray-400" />
+        {/* Right Side - Split History & Settled */}
+        <div className="space-y-6">
+          {/* Active Split History */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div className="px-6 py-4 border-b border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900">Split History</h2>
+              <p className="text-xs text-gray-500 mt-1">
+                {splits.filter(s => !s.settled).length} active {splits.filter(s => !s.settled).length === 1 ? 'transaction' : 'transactions'}
+              </p>
+            </div>
+            
+            <div className="max-h-[400px] overflow-y-auto">
+              {splits.filter(s => !s.settled).length > 0 ? (
+                <div className="divide-y divide-gray-100">
+                  {splits.filter(s => !s.settled).reverse().map((split) => (
+                    <div key={split.id}>
+                      <TransactionItem
+                        title={split.title}
+                        date={split.date}
+                        amount={split.amount}
+                        points={parseFloat(split.amount) / 10}
+                        isSplit={true}
+                        participants={split.participants || []}
+                        paidByName={split.paidByName}
+                        totalAmount={split.amount}
+                        onClick={() => handleTransactionClick(split)}
+                      />
+                    </div>
+                  ))}
                 </div>
-                <h3 className="text-base font-medium text-gray-900 mb-2">No splits yet</h3>
-                <p className="text-sm text-gray-500">
-                  Create your first split with a friend
+              ) : (
+                <div className="py-16 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Receipt className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-base font-medium text-gray-900 mb-2">No active splits</h3>
+                  <p className="text-sm text-gray-500">
+                    Create your first split with a friend
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Settled Transactions */}
+          {splits.filter(s => s.settled).length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+              <div className="px-6 py-4 border-b border-gray-100">
+                <h2 className="text-lg font-semibold text-gray-900">Settled</h2>
+                <p className="text-xs text-gray-500 mt-1">
+                  {splits.filter(s => s.settled).length} settled {splits.filter(s => s.settled).length === 1 ? 'transaction' : 'transactions'}
                 </p>
               </div>
-            )}
-          </div>
+              
+              <div className="max-h-[400px] overflow-y-auto">
+                <div className="divide-y divide-gray-100">
+                  {splits.filter(s => s.settled).reverse().map((split) => (
+                    <div key={split.id}>
+                      <TransactionItem
+                        title={split.title}
+                        date={split.date}
+                        amount={split.amount}
+                        points={parseFloat(split.amount) / 10}
+                        isSplit={true}
+                        participants={split.participants || []}
+                        paidByName={split.paidByName}
+                        totalAmount={split.amount}
+                        onClick={() => handleTransactionClick(split)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

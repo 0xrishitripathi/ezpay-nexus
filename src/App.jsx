@@ -6,6 +6,7 @@ import Friends from './pages/Friends'
 import FriendProfile from './pages/FriendProfile'
 import AddFriend from './pages/AddFriend'
 import CreateSplit from './pages/CreateSplit'
+import PaymentRequest from './pages/PaymentRequest'
 import { AppProvider } from './context/AppContext'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
               <Route path="/friends/:friendId" element={<FriendProfile />} />
               <Route path="/add-friend" element={<AddFriend />} />
               <Route path="/create-split" element={<CreateSplit />} />
+              <Route path="/payment/:requestId" element={<PaymentRequest />} />
             </Routes>
           </main>
         </div>

@@ -39,7 +39,7 @@ const Dashboard = () => {
         </div>
         
         <div className="divide-y divide-gray-100">
-          {splits.length > 0 && splits.map((split) => (
+          {splits.length > 0 && [...splits].reverse().map((split) => (
             <div key={split.id}>
               <TransactionItem
                 title={split.title}

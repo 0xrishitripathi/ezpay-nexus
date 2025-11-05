@@ -46,6 +46,12 @@ export const AppProvider = ({ children }) => {
     setSplits(splits.filter(split => split.id !== splitId));
   };
 
+  const settleTransaction = (splitId) => {
+    setSplits(splits.map(split => 
+      split.id === splitId ? { ...split, settled: true, settledDate: new Date().toISOString() } : split
+    ));
+  };
+
   const getTotalBalance = () => {
     return splits.reduce((total, split) => total + parseFloat(split.amount), 0).toFixed(2);
   };
@@ -55,7 +61,7 @@ export const AppProvider = ({ children }) => {
   };
 
   return (
-    <AppContext.Provider value={{ friends, splits, addFriend, addSplit, deleteSplit, getTotalBalance, getEzPoints }}>
+    <AppContext.Provider value={{ friends, splits, addFriend, addSplit, deleteSplit, settleTransaction, getTotalBalance, getEzPoints }}>
       {children}
     </AppContext.Provider>
   );

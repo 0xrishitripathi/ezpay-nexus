@@ -47,11 +47,11 @@ const FriendProfile = () => {
     split.participants?.some(p => p.id === friendId)
   );
 
-  // Calculate balance
+  // Calculate balance (excluding settled transactions)
   const calculateBalance = () => {
-    const total = friendSplits.reduce((sum, split) => 
-      sum + parseFloat(split.perPersonAmount || 0), 0
-    );
+    const total = friendSplits
+      .filter(split => !split.settled)
+      .reduce((sum, split) => sum + parseFloat(split.perPersonAmount || 0), 0);
     return total.toFixed(2);
   };
 
@@ -161,7 +161,7 @@ const FriendProfile = () => {
         
         {friendSplits.length > 0 ? (
           <div className="divide-y divide-gray-100">
-            {friendSplits.map((split) => (
+            {[...friendSplits].reverse().map((split) => (
               <div key={split.id}>
                 <TransactionItem
                   title={split.title}

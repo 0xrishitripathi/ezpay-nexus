@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Calendar, DollarSign, Users, Trash2 } from 'lucide-react';
+import LoadingOverlay from './LoadingOverlay';
+import EmailSentModal from './EmailSentModal';
 
 const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [showEmailSent, setShowEmailSent] = useState(false);
+  const [friendsWithLinks, setFriendsWithLinks] = useState([]);
+
   if (!isOpen || !transaction) return null;
 
   const handleDelete = () => {
@@ -9,6 +15,36 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
       onDelete(transaction.id);
       onClose();
     }
+  };
+
+  const handleSettleUp = async () => {
+    // Show loading overlay
+    setIsGeneratingLink(true);
+
+    // Generate payment links for all participants
+    const participants = transaction.participants || [];
+    const linksData = participants.map(friend => {
+      const requestId = `${transaction.id}_${friend.id}`;
+      const link = `${window.location.origin}/payment/${requestId}`;
+      return {
+        id: friend.id,
+        name: friend.name,
+        paymentLink: link
+      };
+    });
+
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Hide loading and show email sent modal
+    setIsGeneratingLink(false);
+    setFriendsWithLinks(linksData);
+    setShowEmailSent(true);
+  };
+
+  const handleCloseEmailModal = () => {
+    setShowEmailSent(false);
+    onClose();
   };
 
   // Generate avatar colors based on name
@@ -58,10 +94,19 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full">
+        <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+          {/* Settled Stamp */}
+          {transaction.settled && (
+            <div className="absolute top-24 right-8 z-20 transform rotate-12">
+              <div className="bg-green-500 text-white px-6 py-3 rounded-lg font-bold text-xl border-4 border-green-600 shadow-lg opacity-90">
+                SETTLED
+              </div>
+            </div>
+          )}
+
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-100">
-            <h2 className="text-xl font-bold text-gray-900">Transaction Details</h2>
+          <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
+            <h2 className="text-xl font-semibold text-gray-900">Transaction Details</h2>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleDelete}
@@ -171,18 +216,50 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
                 </div>
               </div>
             )}
+
+            {/* Tx Hash - Only show when settled */}
+            {transaction.settled && (
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div className="flex items-start">
+                  <div className="flex-1">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-2">Tx Hash</h4>
+                    <a
+                      href="https://etherscan.io/tx/0x90f8133250df3d79bf8444015ebedca782d30d23594cadbe2a83dd6a8e0c638a"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:text-blue-700 underline break-all font-mono"
+                    >
+                      https://etherscan.io/tx/0x90f8133250df3d79bf8444015ebedca782d30d23594cadbe2a83dd6a8e0c638a
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Footer */}
-          <div className="p-6 border-t border-gray-100 flex justify-center">
-            <button
-              className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-            >
-              Settle Up
-            </button>
-          </div>
+          {/* Footer - Only show Settle Up button if not settled */}
+          {!transaction.settled && (
+            <div className="p-6 border-t border-gray-100 flex justify-center">
+              <button
+                onClick={handleSettleUp}
+                className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              >
+                Settle Up
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Loading Overlay */}
+      {isGeneratingLink && <LoadingOverlay message="Generating Payment Link..." />}
+
+      {/* Email Sent Modal */}
+      <EmailSentModal
+        isOpen={showEmailSent}
+        onClose={handleCloseEmailModal}
+        friends={friendsWithLinks}
+      />
     </div>
   );
 };
