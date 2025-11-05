@@ -21,10 +21,11 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-gray-900">
-                <span className="italic">EZ</span>
-                <span className="font-normal">pay</span>
-              </span>
+              <img 
+                src="/s3ez-logo.png" 
+                alt="S3EZ Logo" 
+                className="h-8 w-auto"
+              />
             </Link>
           </div>
           
