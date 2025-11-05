@@ -253,8 +253,14 @@ const TransactionDetailModal = ({ transaction, isOpen, onClose, onDelete }) => {
           {!transaction.settled && (
             <div className="p-6 border-t border-gray-100 flex justify-center">
               <button
-                onClick={handleSettleUp}
-                className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  alert('Button clicked!');
+                  handleSettleUp();
+                }}
+                type="button"
+                className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors cursor-pointer"
               >
                 Settle Up
               </button>
